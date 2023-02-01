@@ -46,6 +46,7 @@ class User < ApplicationRecord
     end
 
     def reset_session_token!
+        # debugger
         self.session_token = generate_unique_session_token
         self.save!
         session_token
@@ -63,7 +64,5 @@ class User < ApplicationRecord
             return token unless User.exists?(session_token: token)
         end
     end
-
-
 
 end
