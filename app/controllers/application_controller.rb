@@ -7,6 +7,10 @@ class ApplicationController < ActionController::API
         @current_user ||= User.find_by(session_token: session[:session_token])
     end
 
+    def logged_in?
+        !!current_user
+    end
+
     def login!(user)
         session[:session_token] = user.reset_session_token!
         @current_user = user
@@ -14,7 +18,7 @@ class ApplicationController < ActionController::API
 
     def logout!
         # debugger
-        current_user.reset_session_token! if !!current_user
+        current_user.reset_session_token! if logged_in?
         session[:session_token] = nil
         @current_user = nil
     end
@@ -22,6 +26,12 @@ class ApplicationController < ActionController::API
     def require_logged_in
         unless current_user
             render json: { message: 'Unauthorized' }, status: :unauthorized
+        end
+    end
+
+    def require_logged_out
+        if logged_in?
+            render json: { errors: 'Must be logged out'}
         end
     end
 
